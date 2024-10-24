@@ -1,6 +1,9 @@
 name: build
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - master
+  pull_request:
 
 jobs:
   build_aarch64_softmmu_linux:
@@ -62,13 +65,14 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y bash bc bison bzip2 ca-certificates ccache clang mingw-w64 ninja-build pkgconf python3 python3-pip python3-venv python3-yaml
+          sudo apt-get install -y bash bc bison bzip2 ca-certificates ccache clang mingw-w64 pkg-config-i686-w64-mingw32 libglib2.0-dev:i386 ninja-build pkgconf python3 python3-pip python3-venv python3-yaml
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Build QEMU for Windows 32-bit
         run: |
+          export PKG_CONFIG=i686-w64-mingw32-pkg-config
           mkdir build
           cd build
           ../configure --cross-prefix=i686-w64-mingw32- --target-list=i386-softmmu --enable-lzfse --disable-werror
@@ -89,13 +93,14 @@ jobs:
       - name: Install build dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y bash bc bison bzip2 ca-certificates ccache clang mingw-w64 ninja-build pkgconf python3 python3-pip python3-venv python3-yaml
+          sudo apt-get install -y bash bc bison bzip2 ca-certificates ccache clang mingw-w64 pkg-config-x86_64-w64-mingw32 libglib2.0-dev ninja-build pkgconf python3 python3-pip python3-venv python3-yaml
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Build QEMU for Windows 64-bit
         run: |
+          export PKG_CONFIG=x86_64-w64-mingw32-pkg-config
           mkdir build
           cd build
           ../configure --cross-prefix=x86_64-w64-mingw32- --target-list=x86_64-softmmu --enable-lzfse --disable-werror
